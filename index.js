@@ -1,8 +1,10 @@
 'use strict';
 const fs = require('fs');
+const { exec, spawn } = require('child_process');
 
 const minGrayLevel = 0;
 const maxGrayLevel = 255;
+const tempFileName = 'ndarray-hist-data.txt';
 
 function imhist (ndarray) {
   const image = ndarray.pick(null, null, 0);
@@ -20,6 +22,7 @@ function imhist (ndarray) {
     }
   })
   writeDataFile(grayLevels, frequencies);
+  plotDataFile();
 }
 
 function range (min, max) {
@@ -35,7 +38,13 @@ function writeDataFile (grayLevels, frequencies) {
   grayLevels.forEach(level => {
     data += `${level} ${frequencies[level]}\n`;
   })
-  fs.writeFileSync('./ndarray-hist-data.txt', data, {encoding: 'utf-8'});
+  fs.writeFileSync(`./${tempFileName}`, data, {encoding: 'utf-8'});
+}
+
+function plotDataFile () {
+  let gnuplot = spawn('gnuplot', ['-p']);
+  gnuplot.stdin.write(`plot "${tempFileName}" with boxes fill solid 0.5\n`);
+  gnuplot.stdin.end();
 }
 
 module.exports = imhist;
