@@ -4,25 +4,29 @@ const { exec, spawn } = require('child_process');
 
 const minGrayLevel = 0;
 const maxGrayLevel = 255;
-const tempFileName = 'ndarray-hist-data.txt';
+const tempFileName = 'ndarray-hist-data.dat';
 
 function imhist (ndarray) {
-  const image = ndarray.pick(null, null, 0);
+  const grayImage = ndarray.pick(null, null, 0);
   const grayLevels = range(minGrayLevel, maxGrayLevel);
   const frequencies = new Array(grayLevels.length);
 
   grayLevels.forEach(level => {
     frequencies[level] = 0;
-    for(let i = 0; i < image.shape[0]; i++) {
-      for(let j = 0; j < image.shape[1]; j++) {
-        if (image.get(i, j) === level) {
+    for(let i = 0; i < grayImage.shape[0]; i++) {
+      for(let j = 0; j < grayImage.shape[1]; j++) {
+        if (grayImage.get(i, j) === level) {
           frequencies[level]++;
         }
       }
     }
   })
+
   writeDataFile(grayLevels, frequencies);
-  plotDataFile();
+  let plot = plotDataFile();
+  plot.on('close', () => {
+    clearDataFile();
+  })
 }
 
 function range (min, max) {
@@ -41,10 +45,16 @@ function writeDataFile (grayLevels, frequencies) {
   fs.writeFileSync(`./${tempFileName}`, data, {encoding: 'utf-8'});
 }
 
-function plotDataFile () {
+function plotDataFile (callback) {
   let gnuplot = spawn('gnuplot', ['-p']);
-  gnuplot.stdin.write(`plot "${tempFileName}" with boxes fill solid 0.5\n`);
+  gnuplot.stdin.write(`bind "Escape" "exit"\n`);
+  gnuplot.stdin.write(`plot "${tempFileName}" with impulses\n`);
   gnuplot.stdin.end();
+  return gnuplot
+}
+
+function clearDataFile () {
+  fs.unlinkSync(`${tempFileName}`);
 }
 
 module.exports = imhist;
