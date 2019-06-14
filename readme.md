@@ -17,16 +17,21 @@ gnuplot --version
 ## Usage
 
 ```js
-var getPixels = require("get-pixels");
-var imhist = require("ndarray-imhist");
+const getPixels = require("get-pixels");
+const imhist = require("ndarray-imhist");
+
+// Plotting options
+const options = {
+  color: "blue" // Impulses color, must be a valid Gnuplot "rgbcolor". Otherwise, plotting will fail silently
+}
 
 getPixels("lena.png", function(err, pixels) {
   if(!err && pixels) {
-    imhist(pixels);
+    imhist(pixels, options); // options are not required
   }
 })
 ```
 
 You will get something like that: 
 
-![ndarray-imhist](https://user-images.githubusercontent.com/11301627/59232470-6c723200-8bdc-11e9-873a-ec06825acf52.png)
+![ndarray-imhist](https://user-images.githubusercontent.com/11301627/59524131-02eb6f80-8ecb-11e9-893d-90c39f50e800.png)

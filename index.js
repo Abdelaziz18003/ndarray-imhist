@@ -5,8 +5,11 @@ const { spawn } = require('child_process');
 const minGrayLevel = 0;
 const maxGrayLevel = 255;
 const tempFileName = 'ndarray-hist-data.dat';
+const defaultOptions = {
+  color: 'blue'
+}
 
-function imhist (ndarray) {
+function imhist (ndarray, options = defaultOptions) {
   const grayImage = ndarray.pick(null, null, 0);
   const grayLevels = range(minGrayLevel, maxGrayLevel);
   const frequencies = new Array(grayLevels.length);
@@ -23,10 +26,10 @@ function imhist (ndarray) {
   })
 
   writeDataFile(grayLevels, frequencies);
-  let plot = plotDataFile();
-  plot.on('close', () => {
-    clearDataFile();
-  })
+  plotDataFile(options)
+    .on('close', () => {
+      clearDataFile();
+    })
 }
 
 function range (min, max) {
@@ -45,11 +48,11 @@ function writeDataFile (grayLevels, frequencies) {
   dataFile.end();
 }
 
-function plotDataFile (callback) {
+function plotDataFile ({color}) {
   let gnuplot = spawn('gnuplot', ['-p']);
-  gnuplot.stdin.write(`plot "${tempFileName}" with impulses notitle\n`);
+  gnuplot.stdin.write(`plot "${tempFileName}" with impulses lc rgbcolor "${color}" notitle\n`);
   gnuplot.stdin.end();
-  return gnuplot
+  return gnuplot;
 }
 
 function clearDataFile () {
