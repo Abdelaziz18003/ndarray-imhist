@@ -1,6 +1,6 @@
 'use strict';
 const fs = require('fs');
-const { exec, spawn } = require('child_process');
+const { spawn } = require('child_process');
 
 const minGrayLevel = 0;
 const maxGrayLevel = 255;
@@ -38,16 +38,15 @@ function range (min, max) {
 }
 
 function writeDataFile (grayLevels, frequencies) {
-  let data = ''
+  let dataFile = fs.createWriteStream(`./${tempFileName}`);
   grayLevels.forEach(level => {
-    data += `${level} ${frequencies[level]}\n`;
+    dataFile.write(`${level} ${frequencies[level]}\n`);
   })
-  fs.writeFileSync(`./${tempFileName}`, data, {encoding: 'utf-8'});
+  dataFile.end();
 }
 
 function plotDataFile (callback) {
   let gnuplot = spawn('gnuplot', ['-p']);
-  gnuplot.stdin.write(`bind "Escape" "exit"\n`);
   gnuplot.stdin.write(`plot "${tempFileName}" with impulses\n`);
   gnuplot.stdin.end();
   return gnuplot
