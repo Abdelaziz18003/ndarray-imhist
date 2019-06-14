@@ -50,6 +50,7 @@ function writeDataFile (grayLevels, frequencies) {
 
 function plotDataFile ({color}) {
   let gnuplot = spawn('gnuplot', ['-p']);
+  gnuplot.stdin.write(`set xrange [${minGrayLevel}:${maxGrayLevel}]\n`);
   gnuplot.stdin.write(`plot "${tempFileName}" with impulses lc rgbcolor "${color}" notitle\n`);
   gnuplot.stdin.end();
   return gnuplot;
