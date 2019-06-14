@@ -47,7 +47,7 @@ function writeDataFile (grayLevels, frequencies) {
 
 function plotDataFile (callback) {
   let gnuplot = spawn('gnuplot', ['-p']);
-  gnuplot.stdin.write(`plot "${tempFileName}" with impulses\n`);
+  gnuplot.stdin.write(`plot "${tempFileName}" with impulses notitle\n`);
   gnuplot.stdin.end();
   return gnuplot
 }
