@@ -6,7 +6,8 @@ const minGrayLevel = 0;
 const maxGrayLevel = 255;
 const tempFileName = 'ndarray-hist-data.dat';
 const defaultOptions = {
-  color: 'blue'
+  color: 'blue',
+  plot: true
 }
 
 function imhist (ndarray, options = defaultOptions) {
@@ -25,11 +26,15 @@ function imhist (ndarray, options = defaultOptions) {
     }
   })
 
-  writeDataFile(grayLevels, frequencies);
-  plotDataFile(options)
-    .on('close', () => {
-      clearDataFile();
-    })
+  // plot the histogram using gnuplot 
+  if (options.plot) {
+    writeDataFile(grayLevels, frequencies);
+    plotDataFile(options)
+      .on('close', () => {
+        clearDataFile();
+      })
+  }
+
   return [grayLevels, frequencies];
 }
 
