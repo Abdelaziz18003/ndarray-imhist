@@ -30,6 +30,7 @@ function imhist (ndarray, options = defaultOptions) {
     .on('close', () => {
       clearDataFile();
     })
+  return [grayLevels, frequencies];
 }
 
 function range (min, max) {
