@@ -11,7 +11,8 @@ const defaultOptions = {
   plot: true
 }
 
-function imhist (ndarray, options = defaultOptions) {
+function imhist (ndarray, options) {
+  options = Object.assign({}, defaultOptions, options);
   const grayLevels = range(minGrayLevel, maxGrayLevel);
   const frequencies = new Array((maxGrayLevel - minGrayLevel) + 1);
   const shape = ndarray.shape;
