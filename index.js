@@ -26,10 +26,12 @@ function imhist (ndarray, options) {
   // plot the histogram using gnuplot 
   if (options.plot) {
     let dataFileName = `ndarray-hist-data-${Math.round(Math.random() * 1000)}.dat`;
-    writeDataFile(dataFileName, grayLevels, frequencies);
-    plotDataFile(dataFileName, options)
+    writeDataFile(dataFileName, grayLevels, frequencies)
       .on('close', () => {
-        clearDataFile(dataFileName);
+        plotDataFile(dataFileName, options)
+          .on('close', () => {
+            clearDataFile(dataFileName);
+          })
       })
   }
   return [grayLevels, frequencies];
@@ -49,6 +51,7 @@ function writeDataFile (dataFileName, grayLevels, frequencies) {
     dataFile.write(`${level} ${frequencies[level]}\n`);
   })
   dataFile.end();
+  return dataFile;
 }
 
 function plotDataFile (dataFileName, {color}) {
