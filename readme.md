@@ -28,6 +28,7 @@ displays the histogram of a grayscale image `img` (should be an [ndarray](https:
 
 Option  | required | default | description
 ------- | -------- | ------- | -----------
+channel | no       | 0       | Select the RGB channel to get the historgram for. `0` for the red channel, `1` for the green and `2` for the blue one.
 color   | no       | "blue"  | Set the impulses color, must be a valid Gnuplot "rgbcolor". Otherwise, plotting will fail silently
 plot    | no       | true    | If true, plot the histogram using Gnuplot. Otherwise, return just the histogram data.
 

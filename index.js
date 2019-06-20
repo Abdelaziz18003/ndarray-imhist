@@ -5,26 +5,23 @@ const { spawn } = require('child_process');
 const minGrayLevel = 0;
 const maxGrayLevel = 255;
 const tempFileName = 'ndarray-hist-data.dat';
+
 const defaultOptions = {
+  channel: 0,
   color: 'blue',
   plot: true
 }
 
 function imhist (ndarray, options = defaultOptions) {
-  const grayImage = ndarray.pick(null, null, 0);
   const grayLevels = range(minGrayLevel, maxGrayLevel);
-  const frequencies = new Array(grayLevels.length);
+  const frequencies = new Array((maxGrayLevel - minGrayLevel) + 1);
+  const shape = ndarray.shape;
 
-  grayLevels.forEach(level => {
-    frequencies[level] = 0;
-    for(let i = 0; i < grayImage.shape[0]; i++) {
-      for(let j = 0; j < grayImage.shape[1]; j++) {
-        if (grayImage.get(i, j) === level) {
-          frequencies[level]++;
-        }
-      }
-    }
-  })
+  frequencies.fill(0);
+
+  for (let i = options.channel; i < ndarray.data.length; i = i + (shape[2] || 1)) {
+    frequencies[ndarray.data[i]]++;
+  }
 
   // plot the histogram using gnuplot 
   if (options.plot) {
@@ -34,7 +31,6 @@ function imhist (ndarray, options = defaultOptions) {
         clearDataFile();
       })
   }
-
   return [grayLevels, frequencies];
 }
 
