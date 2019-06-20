@@ -4,7 +4,6 @@ const { spawn } = require('child_process');
 
 const minGrayLevel = 0;
 const maxGrayLevel = 255;
-const tempFileName = 'ndarray-hist-data.dat';
 
 const defaultOptions = {
   channel: 0,
@@ -25,10 +24,11 @@ function imhist (ndarray, options = defaultOptions) {
 
   // plot the histogram using gnuplot 
   if (options.plot) {
-    writeDataFile(grayLevels, frequencies);
-    plotDataFile(options)
+    let dataFileName = `ndarray-hist-data-${Math.round(Math.random() * 1000)}.dat`;
+    writeDataFile(dataFileName, grayLevels, frequencies);
+    plotDataFile(dataFileName, options)
       .on('close', () => {
-        clearDataFile();
+        clearDataFile(dataFileName);
       })
   }
   return [grayLevels, frequencies];
@@ -42,24 +42,24 @@ function range (min, max) {
   return array;
 }
 
-function writeDataFile (grayLevels, frequencies) {
-  let dataFile = fs.createWriteStream(`./${tempFileName}`);
+function writeDataFile (dataFileName, grayLevels, frequencies) {
+  let dataFile = fs.createWriteStream(`./${dataFileName}`);
   grayLevels.forEach(level => {
     dataFile.write(`${level} ${frequencies[level]}\n`);
   })
   dataFile.end();
 }
 
-function plotDataFile ({color}) {
+function plotDataFile (dataFileName, {color}) {
   let gnuplot = spawn('gnuplot', ['-p']);
   gnuplot.stdin.write(`set xrange [${minGrayLevel}:${maxGrayLevel}]\n`);
-  gnuplot.stdin.write(`plot "${tempFileName}" with impulses lc rgbcolor "${color}" notitle\n`);
+  gnuplot.stdin.write(`plot "${dataFileName}" with impulses lc rgbcolor "${color}" notitle\n`);
   gnuplot.stdin.end();
   return gnuplot;
 }
 
-function clearDataFile () {
-  fs.unlinkSync(`${tempFileName}`);
+function clearDataFile (dataFileName) {
+  fs.unlinkSync(`${dataFileName}`);
 }
 
 module.exports = imhist;
