@@ -16,10 +16,11 @@ function imhist (ndarray, options) {
   const grayLevels = range(minGrayLevel, maxGrayLevel);
   const frequencies = new Array((maxGrayLevel - minGrayLevel) + 1);
   const shape = ndarray.shape;
+  const channel = shape[2] ? options.channel: ndarray.data.indexOf(ndarray.get(0, 0));
 
   frequencies.fill(0);
 
-  for (let i = options.channel; i < ndarray.data.length; i = i + (shape[2] || 1)) {
+  for (let i = channel; i < ndarray.data.length; i = i + (shape[2] || 4)) {
     frequencies[ndarray.data[i]]++;
   }
 
