@@ -4,7 +4,7 @@
   "description": "A package to plot images' histograms using node.js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/index.js | tap-spec"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,14 @@
   "bugs": {
     "url": "https://github.com/Abdelaziz18003/ndarray-imhist/issues"
   },
-  "homepage": "https://github.com/Abdelaziz18003/ndarray-imhist#readme"
+  "homepage": "https://github.com/Abdelaziz18003/ndarray-imhist#readme",
+  "devDependencies": {
+    "get-pixels": "^3.3.2",
+    "ndarray": "^1.0.18",
+    "tap-spec": "^5.0.0",
+    "tape": "^4.11.0"
+  },
+  "dependencies": {
+    "ndarray-scratch": "^1.2.0"
+  }
 }
