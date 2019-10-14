@@ -2,6 +2,8 @@
 const fs = require('fs');
 const { spawn } = require('child_process');
 
+const pool = require('ndarray-scratch');
+
 const minGrayLevel = 0;
 const maxGrayLevel = 255;
 
@@ -12,16 +14,18 @@ const defaultOptions = {
 }
 
 function imhist (ndarray, options) {
-  validateInput(ndarray)
+  validateInput(ndarray);
   options = Object.assign({}, defaultOptions, options);
+
+  ndarray = ndarray.pick(null, null, options.channel);
+  ndarray = pool.clone(ndarray);
+
   const grayLevels = range(minGrayLevel, maxGrayLevel);
   const frequencies = new Array((maxGrayLevel - minGrayLevel) + 1);
-  const shape = ndarray.shape;
-  const channel = shape[2] ? options.channel: ndarray.data.indexOf(ndarray.get(0, 0));
 
   frequencies.fill(0);
 
-  for (let i = channel; i < ndarray.data.length; i = i + (shape[2] || 4)) {
+  for (let i = 0; i < ndarray.data.length; i++) {
     frequencies[ndarray.data[i]]++;
   }
 
