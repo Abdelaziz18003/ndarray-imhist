@@ -12,6 +12,7 @@ const defaultOptions = {
 }
 
 function imhist (ndarray, options) {
+  validateInput(ndarray)
   options = Object.assign({}, defaultOptions, options);
   const grayLevels = range(minGrayLevel, maxGrayLevel);
   const frequencies = new Array((maxGrayLevel - minGrayLevel) + 1);
@@ -44,6 +45,21 @@ function range (min, max) {
     array.push(i);
   }
   return array;
+}
+
+function isNdarray (array) {
+  return (
+    array.hasOwnProperty('data') &&
+    array.hasOwnProperty('shape') &&
+    array.hasOwnProperty('stride') &&
+    array.hasOwnProperty('offset')
+  )
+}
+
+function validateInput (input) {
+  if (!isNdarray(input)) {
+    throw new Error('Expected input to be an ndarray');
+  }
 }
 
 function writeDataFile (dataFileName, grayLevels, frequencies) {
