@@ -1,5 +1,4 @@
 'use strict';
-const fs = require('fs');
 const { spawn } = require('child_process');
 
 const pool = require('ndarray-scratch');
@@ -31,14 +30,7 @@ function imhist (ndarray, options) {
 
   // plot the histogram using gnuplot 
   if (options.plot) {
-    let dataFileName = `ndarray-hist-data-${Math.round(Math.random() * 1000)}.dat`;
-    writeDataFile(dataFileName, grayLevels, frequencies)
-      .on('close', () => {
-        plotDataFile(dataFileName, options)
-          .on('close', () => {
-            clearDataFile(dataFileName);
-          })
-      })
+    plotData(grayLevels, frequencies, options)
   }
   return [grayLevels, frequencies];
 }
@@ -66,25 +58,18 @@ function validateInput (input) {
   }
 }
 
-function writeDataFile (dataFileName, grayLevels, frequencies) {
-  let dataFile = fs.createWriteStream(`./${dataFileName}`);
+function plotData (grayLevels, frequencies, {color}) {
+  let data = '';
   grayLevels.forEach(level => {
-    dataFile.write(`${level} ${frequencies[level]}\n`);
+    data += `${level} ${frequencies[level]}\n`;
   })
-  dataFile.end();
-  return dataFile;
-}
-
-function plotDataFile (dataFileName, {color}) {
   let gnuplot = spawn('gnuplot', ['-p']);
   gnuplot.stdin.write(`set xrange [${minGrayLevel}:${maxGrayLevel}]\n`);
-  gnuplot.stdin.write(`plot "${dataFileName}" with impulses lc rgbcolor "${color}" notitle\n`);
+  gnuplot.stdin.write(`plot '-' with impulses lc rgbcolor "${color}" notitle\n`);
+  gnuplot.stdin.write(`${data}`);
+  gnuplot.stdin.write(`EOF`);
   gnuplot.stdin.end();
   return gnuplot;
-}
-
-function clearDataFile (dataFileName) {
-  fs.unlinkSync(`${dataFileName}`);
 }
 
 module.exports = imhist;
